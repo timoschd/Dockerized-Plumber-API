@@ -1,0 +1,40 @@
+version: "3.6"
+
+networks:
+  cr-net:
+  name: cr-net
+  #driver: overlay
+
+volumes:
+  shared-data:
+ 
+services:
+  lead-api:
+    build:
+      context: ./REST_API
+    depends_on:
+      - cron-job
+    container_name: rest-api
+    image: rest_api
+    networks:
+      - cr-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - shared-data:/src/shared-data
+    ports:
+      - "3838:3838"
+    restart: always
+
+  cron-job:
+    build:
+      context: ./cron
+    container_name: cron-job
+    image: cron_job
+    networks:
+      - cr-net 
+    volumes:
+      - shared-data:/src/shared-data
+    restart: always
+
+ 
+ 

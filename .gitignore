@@ -1,0 +1,5 @@
+# do not track these files:
+/shared-data
+.Rhistory
+.Rproj.user
+.RData
