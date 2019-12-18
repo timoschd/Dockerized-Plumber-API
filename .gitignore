@@ -4,3 +4,5 @@
 .Rproj.user
 .RData
 /cron/src/service-account-big-query.json
+/cron/src/shared-data/
+/REST_API/src/shared-data/
