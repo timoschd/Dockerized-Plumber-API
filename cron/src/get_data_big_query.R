@@ -49,9 +49,9 @@ pacman::p_load("tidyverse", "lubridate", "padr", "dbplyr", "DBI", "bigrquery")
 get_data<- function(){
             
             # check for already existing data for first sourcing
-            if(class(try(readRDS("/src/shared-data/airquality_india.RDS"), silent = TRUE))== "try-error"){
+            if(class(try(readRDS("src/shared-data/airquality_india.RDS"), silent = TRUE))== "try-error"){
                         
-                        saveRDS(0, "/src/shared-data/rownumber.RDS")
+                        saveRDS(0, "src/shared-data/rownumber.RDS")
             } else{}
             
             # connect to Big Query Dataset global_air_quality; bigrquery readme: https://github.com/r-dbi/bigrquery
@@ -80,7 +80,7 @@ get_data<- function(){
             } 
             
             # check for new entries, if not equal, get new data
-            if(n_entries()[1] != readRDS("/src/shared-data/rownumber.RDS")){
+            if(n_entries()[1] != readRDS("src/shared-data/rownumber.RDS")){
                         
                         # dblyr filter measurements from India
                         airquality_india<- airqual %>% 
@@ -88,7 +88,7 @@ get_data<- function(){
                                     as_tibble 
                         
                         # save new number of entries
-                        saveRDS(dim(airquality_india)[1], "/src/shared-data/rownumber.RDS")
+                        saveRDS(dim(airquality_india)[1], "src/shared-data/rownumber.RDS")
                         
                         # dplyr date features 
                         airquality_india<- airquality_india %>%           
@@ -101,7 +101,7 @@ get_data<- function(){
                                     pad(by= "Day")    # fill missing days with NA
                         
                         # save new data
-                        saveRDS(airquality_india, "/src/shared-data/airquality_india.RDS")
+                        saveRDS(airquality_india, "src/shared-data/airquality_india.RDS")
                         print("New data saved")
                         
             }
