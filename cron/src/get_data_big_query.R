@@ -56,7 +56,7 @@ get_data<- function(){
             
             # connect to Big Query Dataset global_air_quality; bigrquery readme: https://github.com/r-dbi/bigrquery
 
-            bq_auth("MyEmailHere@googlemail.com") # auth with email for which Big Query API is enabled at https://console.cloud.google.com/
+            bq_auth(path ="src/service-account-big-query.json") # put your json account token in src folder for auth, see https://gargle.r-lib.org/articles/get-api-credentials.html section "Service account token" for generation
 
             
             con <- dbConnect(
