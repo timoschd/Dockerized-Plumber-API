@@ -55,7 +55,9 @@ get_data<- function(){
             } else{}
             
             # connect to Big Query Dataset global_air_quality; bigrquery readme: https://github.com/r-dbi/bigrquery
-            bq_auth("YourEmail@googlemail.com") # auth with email for which Big Query API is enabled at https://console.cloud.google.com/
+
+            bq_auth("MyEmailHere@googlemail.com") # auth with email for which Big Query API is enabled at https://console.cloud.google.com/
+
             
             con <- dbConnect(
                         bigrquery::bigquery(),
