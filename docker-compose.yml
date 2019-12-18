@@ -6,13 +6,13 @@ networks:
   #driver: overlay
 
 volumes:
-  shared-data:
+  shared-data: # shared voume between the two containers
  
 services:
   lead-api:
     build:
-      context: ./REST_API
-    depends_on:
+      context: ./REST_API # Docker image is rebuild from directory
+    depends_on: # cron job container needs to start first
       - cron-job
     container_name: rest-api
     image: rest_api
