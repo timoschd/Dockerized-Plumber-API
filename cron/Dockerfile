@@ -13,6 +13,7 @@ RUN R -e "install.packages(c('pacman', 'lubridate', 'padr', 'dbplyr', 'DBI', 'bi
 # make dir
 RUN mkdir -p /src/shared-data
 
+# copy folder which contains cronfile, RScript and Big Query auth JSON
 COPY /src    /src  
 WORKDIR /src
 

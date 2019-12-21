@@ -18,8 +18,5 @@ RUN chmod -R 755 /src
 # expose port
 EXPOSE 3838
 
-ENTRYPOINT ["R", "-e", "pr <- plumber::plumb(commandArgs()[4]); pr$run(host='0.0.0.0', port=3838)"]
-
-CMD [ "/src/API.R"]
-
+CMD ["R", "-e", "pr <- plumber::plumb('/src/API.R'); pr$run(host='0.0.0.0', port=3838)"]
 

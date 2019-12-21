@@ -33,6 +33,11 @@ pacman::p_load("tidyverse", "lubridate", "plumber")
 ## Header End ----------------------------------------------------------------------
 
 
+# check if shared directory exists
+print("Shared directory exists:")
+print(file.exists("shared-data/"))
+
+
 
 ## REST API -----------------------------------------------------------------------------------------------------------
 
@@ -44,14 +49,14 @@ pacman::p_load("tidyverse", "lubridate", "plumber")
 #* Get complete data from all Indian measurement points 
 #* @post /all
 function(){
-            readRDS("src/shared-data/airquality_india.RDS")
+            readRDS("shared-data/airquality_india.RDS")
         
 }
 
 #* Get all Indian measurement locations
 #* @post /locations
 function(){
-            distinct(readRDS("src/shared-data/airquality_india.RDS"), city, location)
+            distinct(readRDS("shared-data/airquality_india.RDS"), city, location)
 
 }
 
@@ -61,9 +66,9 @@ function(){
 #* @post /summed_quality_now
 function(date = "today", measurement_location = "all"){
            if(date == "year"){
-                        readRDS("src/shared-data/airquality_india.RDS") [readRDS("src/shared-data/airquality_india.RDS")$Year == floor_date(Sys.Date(), "year"),] %>% 
+                        readRDS("shared-data/airquality_india.RDS") [readRDS("shared-data/airquality_india.RDS")$Year == floor_date(Sys.Date(), "year"),] %>% 
                                    {
-                                     if (measurement_location %in% distinct(readRDS("src/shared-data/airquality_india.RDS"), location)[[1]])
+                                     if (measurement_location %in% distinct(readRDS("shared-data/airquality_india.RDS"), location)[[1]])
                                      filter(., location == measurement_location)
                                     else
                                      .
@@ -73,9 +78,9 @@ function(date = "today", measurement_location = "all"){
                                    
            
            } else if ( date == "quarter"){
-                       readRDS("src/shared-data/airquality_india.RDS") [readRDS("src/shared-data/airquality_india.RDS")$Quarter == floor_date(Sys.Date(), "quarter"),] %>% 
+                       readRDS("shared-data/airquality_india.RDS") [readRDS("shared-data/airquality_india.RDS")$Quarter == floor_date(Sys.Date(), "quarter"),] %>% 
                                    {
-                                               if (measurement_location %in% distinct(readRDS("src/shared-data/airquality_india.RDS"), location)[[1]])
+                                               if (measurement_location %in% distinct(readRDS("shared-data/airquality_india.RDS"), location)[[1]])
                                                            filter(., location == measurement_location)
                                                else
                                                            .
@@ -85,9 +90,9 @@ function(date = "today", measurement_location = "all"){
                        
                        
            } else if ( date == "month"){
-                       readRDS("src/shared-data/airquality_india.RDS") [readRDS("src/shared-data/airquality_india.RDS")$Month == floor_date(Sys.Date(), "month"),] %>% 
+                       readRDS("shared-data/airquality_india.RDS") [readRDS("shared-data/airquality_india.RDS")$Month == floor_date(Sys.Date(), "month"),] %>% 
                                    {
-                                               if (measurement_location %in% distinct(readRDS("src/shared-data/airquality_india.RDS"), location)[[1]])
+                                               if (measurement_location %in% distinct(readRDS("shared-data/airquality_india.RDS"), location)[[1]])
                                                            filter(., location == measurement_location)
                                                else
                                                            .
@@ -97,9 +102,9 @@ function(date = "today", measurement_location = "all"){
 
 
            } else if ( date == "week"){
-                       readRDS("src/shared-data/airquality_india.RDS") [readRDS("src/shared-data/airquality_india.RDS")$Week == floor_date(Sys.Date(), "week", week_start = 1),] %>% 
+                       readRDS("shared-data/airquality_india.RDS") [readRDS("shared-data/airquality_india.RDS")$Week == floor_date(Sys.Date(), "week", week_start = 1),] %>% 
                                    {
-                                               if (measurement_location %in% distinct(readRDS("src/shared-data/airquality_india.RDS"), location)[[1]])
+                                               if (measurement_location %in% distinct(readRDS("shared-data/airquality_india.RDS"), location)[[1]])
                                                            filter(., location == measurement_location)
                                                else
                                                            .
@@ -109,9 +114,9 @@ function(date = "today", measurement_location = "all"){
                        
 
            } else if ( date == "today"){
-                       readRDS("src/shared-data/airquality_india.RDS") [readRDS("src/shared-data/airquality_india.RDS")$Day == floor_date(Sys.Date(), "day"),] %>% 
+                       readRDS("shared-data/airquality_india.RDS") [readRDS("shared-data/airquality_india.RDS")$Day == floor_date(Sys.Date(), "day"),] %>% 
                                    {
-                                               if (measurement_location %in% distinct(readRDS("src/shared-data/airquality_india.RDS"), location)[[1]])
+                                               if (measurement_location %in% distinct(readRDS("shared-data/airquality_india.RDS"), location)[[1]])
                                                            filter(., location == measurement_location)
                                                else
                                                            .
@@ -130,9 +135,9 @@ function(date = "today", measurement_location = "all"){
 #* @post /summed_quality
 function(date = "day", measurement_location = "all"){
             if(date == "year"){
-                        readRDS("src/shared-data/airquality_india.RDS") %>% 
+                        readRDS("shared-data/airquality_india.RDS") %>% 
                                     {
-                                                if (measurement_location %in% distinct(readRDS("src/shared-data/airquality_india.RDS"), location)[[1]])
+                                                if (measurement_location %in% distinct(readRDS("shared-data/airquality_india.RDS"), location)[[1]])
                                                             filter(., location == measurement_location)
                                                 else
                                                             .
@@ -142,9 +147,9 @@ function(date = "day", measurement_location = "all"){
                         
            
             } else if ( date == "quarter"){
-                        readRDS("src/shared-data/airquality_india.RDS") %>% 
+                        readRDS("shared-data/airquality_india.RDS") %>% 
                                     {
-                                                if (measurement_location %in% distinct(readRDS("src/shared-data/airquality_india.RDS"), location)[[1]])
+                                                if (measurement_location %in% distinct(readRDS("shared-data/airquality_india.RDS"), location)[[1]])
                                                             filter(., location == measurement_location)
                                                 else
                                                             .
@@ -154,9 +159,9 @@ function(date = "day", measurement_location = "all"){
                         
                         
             } else if ( date == "month"){
-                        readRDS("src/shared-data/airquality_india.RDS") %>% 
+                        readRDS("shared-data/airquality_india.RDS") %>% 
                                     {
-                                                if (measurement_location %in% distinct(readRDS("src/shared-data/airquality_india.RDS"), location)[[1]])
+                                                if (measurement_location %in% distinct(readRDS("shared-data/airquality_india.RDS"), location)[[1]])
                                                             filter(., location == measurement_location)
                                                 else
                                                             .
@@ -166,9 +171,9 @@ function(date = "day", measurement_location = "all"){
                         
                         
             } else if ( date == "week"){
-                        readRDS("src/shared-data/airquality_india.RDS") %>% 
+                        readRDS("shared-data/airquality_india.RDS") %>% 
                                     {
-                                                if (measurement_location %in% distinct(readRDS("src/shared-data/airquality_india.RDS"), location)[[1]])
+                                                if (measurement_location %in% distinct(readRDS("shared-data/airquality_india.RDS"), location)[[1]])
                                                             filter(., location == measurement_location)
                                                 else
                                                             .
@@ -178,9 +183,9 @@ function(date = "day", measurement_location = "all"){
                         
                         
             } else if ( date == "day"){
-                        readRDS("src/shared-data/airquality_india.RDS") %>% 
+                        readRDS("shared-data/airquality_india.RDS") %>% 
                                     {
-                                                if (measurement_location %in% distinct(readRDS("src/shared-data/airquality_india.RDS"), location)[[1]])
+                                                if (measurement_location %in% distinct(readRDS("shared-data/airquality_india.RDS"), location)[[1]])
                                                             filter(., location == measurement_location)
                                                 else
                                                             .

@@ -2,20 +2,18 @@ version: "3.6"
 
 networks:
   cr-net:
-  name: cr-net
-  #driver: overlay
 
 volumes:
   shared-data: # shared voume between the two containers
  
 services:
   lead-api:
-    build:
+    build: 
       context: ./REST_API # Docker image is rebuild from directory
-    depends_on: # cron job container needs to start first
-      - cron-job
+    depends_on: 
+      - cron-job # cron job container needs to start first
     container_name: rest-api
-    image: rest_api
+    image: rest_api_pub
     networks:
       - cr-net
     volumes:
@@ -26,10 +24,10 @@ services:
     restart: always
 
   cron-job:
-    build:
+    build: 
       context: ./cron
     container_name: cron-job
-    image: cron_job
+    image: cron_job_pub
     networks:
       - cr-net 
     volumes:
