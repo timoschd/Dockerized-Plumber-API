@@ -1,13 +1,13 @@
 version: "3.6"
 
 networks:
-  cr-net:
+  cr-net: # shared container network     
 
 volumes:
   shared-data: # shared voume between the two containers
  
 services:
-  lead-api:
+  REST-API:
     build: 
       context: ./REST_API # Docker image is rebuild from directory
     depends_on: 
