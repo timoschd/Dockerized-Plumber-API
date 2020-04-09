@@ -45,23 +45,23 @@ pacman::p_load("tidyverse", "lubridate", "padr", "dbplyr", "DBI", "bigrquery")
 ## Header End ----------------------------------------------------------------------
 
 
-# check if shared directory exists
+# check if shared directory, file and last_update date exists
 print("Shared directory exists:")
 print(file.exists("/src/shared-data/"))
 
+print("Saved file exists:")
+print(file.exists("/src/shared-data/airquality_india.RDS"))
 
-## Get Data from Big Query conditional on check for change in dataset size ------------------------------------------
+print("Last data update:")
+print(try(readRDS("/src/shared-data/last_update.RDS"), silent = TRUE))
+
+
+## Get Data from Big Query conditional on check of table last update timestamp ------------------------------------------
 
 
 get_data<- function(){
             
-            # check for already existing data for first sourcing
-            if(class(try(readRDS("/src/shared-data/airquality_india.RDS"), silent = TRUE))== "try-error"){
-                        
-                        saveRDS(0, "/src/shared-data/rownumber.RDS")
-            } else{}
-            
-            # connect to Big Query Dataset global_air_quality; bigrquery readme: https://github.com/r-dbi/bigrquery
+           # connect to Big Query Dataset global_air_quality; bigrquery readme: https://github.com/r-dbi/bigrquery
 
             bq_auth(path = "/src/service-account-big-query.json") # put your own json account token in src folder for auth, see https://gargle.r-lib.org/articles/get-api-credentials.html section "Service account token" for generation
 
@@ -73,31 +73,33 @@ get_data<- function(){
                         billing = "divine-outlet-259218"
             )
             
-            #dbListTables(con) # see list of cointained tables
+            #dbListTables(con) # see list of cointained tables - we just have this one in openaq dataset
             
             airqual <- tbl(con, "global_air_quality")
-            print("Connection to Big Query global air quality dataset established")
+            print("Connection to Big Query global air quality data set established")
             
-            n_entries<- function(){
-                        airqual %>% 
-                                    filter(country == "IN") %>% 
-                                    select(location) %>% 
-                                    collect %>% 
-                                    dim()
-            } 
+            # make query function to get the last update date of the table
+            query <- "SELECT *, TIMESTAMP_MILLIS(last_modified_time) AS last_update
+                      FROM `bigquery-public-data.openaq.__TABLES__`
+                        WHERE table_id = 'global_air_quality'"
+            
+            
+            last_update <- dbGetQuery(con, query)$last_update
+            
+            # Explanation: To update data only if the dataset has changed we read in metadata of the dataset to get last update time.
+            # This is done via SQL querying as it is more convenient instead dplyr. We could also check the timestamp of the last entrie in
+            # the data set itself, however querying only the meta data table is faster and does not get billed. The timestamp is calculated
+            # in DB in ms as the raw timestamp from BQ leads to an integer overflow in R.
             
             # check for new entries, if not equal, get new data
-            if(n_entries()[1] != readRDS("/src/shared-data/rownumber.RDS")){
+            if(last_update != try(readRDS("/src/shared-data/last_update.RDS"), silent = TRUE)){
                         
                         # dblyr filter measurements from India
                         airquality_india<- airqual %>% 
                                     filter(country == "IN") %>% 
                                     as_tibble 
                         
-                        # save new number of entries
-                        saveRDS(dim(airquality_india)[1], "/src/shared-data/rownumber.RDS")
-                        
-                        # dplyr date features 
+                        # dplyr & lubridate date features 
                         airquality_india<- airquality_india %>%           
                                     mutate(Day= floor_date(timestamp, "day")) %>% 
                                     mutate(Week= floor_date(Day, "week", week_start = 1)) %>% 
@@ -105,10 +107,17 @@ get_data<- function(){
                                     mutate(Quarter= floor_date(Day, "quarter")) %>% 
                                     mutate(Year= floor_date(Day, "year")) %>% 
                                     distinct(Day, location, .keep_all = TRUE) %>%  # only one measurement per location and day
-                                    pad(by= "Day")    # fill missing days with NA
+                                    pad(by= "Day")    # add missing days with NA values
                         
-                        # save new data
-                        saveRDS(airquality_india, "/src/shared-data/airquality_india.RDS")
+                        # join new airquality data with the old and save
+                        airquality_india_joined <-  readRDS("/src/shared-data/airquality_india.RDS") %>% 
+                                    full_join(airquality_india, by= names(airquality_india))
+                        
+                        saveRDS(airquality_india_joined, "/src/shared-data/airquality_india.RDS")
+                        
+                        # save last update date for future runs
+                        saveRDS(last_update, "/src/shared-data/last_update.RDS")
+                        
                         print("New data saved")
                         
             }
