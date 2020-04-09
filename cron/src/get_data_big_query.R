@@ -99,15 +99,17 @@ get_data<- function(){
                                     filter(country == "IN") %>% 
                                     as_tibble 
                         
-                        # dplyr & lubridate date features 
+                        # dplyr cleaning & lubridate date features 
                         airquality_india<- airquality_india %>%           
                                     mutate(Day= floor_date(timestamp, "day")) %>% 
+                                    pad(by= "Day") %>%  # add missing days with NA values
+                                    distinct(Day, location, .keep_all = TRUE) %>%   # only one measurement per location and day
                                     mutate(Week= floor_date(Day, "week", week_start = 1)) %>% 
                                     mutate(Month= floor_date(Day, "month")) %>% 
                                     mutate(Quarter= floor_date(Day, "quarter")) %>% 
-                                    mutate(Year= floor_date(Day, "year")) %>% 
-                                    distinct(Day, location, .keep_all = TRUE) %>%  # only one measurement per location and day
-                                    pad(by= "Day")    # add missing days with NA values
+                                    mutate(Year= floor_date(Day, "year"))
+                                    
+                                    
                         
                         # join new airquality data with the old and save
                         airquality_india_joined <-  readRDS("/src/shared-data/airquality_india.RDS") %>% 
