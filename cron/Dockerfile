@@ -2,7 +2,7 @@ FROM rocker/tidyverse:latest
 
 MAINTAINER Tobias Verbeke "tobias.verbeke@openanalytics.eu"
  
-# Install dependencies and Download and install shiny server
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     cron 
 
@@ -24,10 +24,8 @@ RUN chmod -R 755 /src
 # Apply cron job
 RUN crontab /src/cronjob
 
-# Create the log file to be able to run tail - put in CMD as otherwise not working 
-RUN touch /var/log/cron.log
 
-# Run the command on container startup with extra touch as https://stackoverflow.com/questions/43802109/output-of-tail-f-at-the-end-of-a-docker-cmd-is-not-showing/43807880#43807880
+# Run the command on container startup with extra touch as https://stackoverflow.com/questions/43802109/output-of-tail-f-at-the-end-of-a-docker-cmd-is-not-showing/43807880#43807880. Otherwise if seperate RUN touch recipe layer the output does not get appenended.
 CMD echo "cronjob gets started" && (cron) && echo "now touch n' tail" && touch /var/log/cron.log && tail -f /var/log/cron.log
 
 

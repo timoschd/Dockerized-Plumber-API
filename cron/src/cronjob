@@ -1,2 +1,2 @@
-2 */12 * * *  /usr/local/bin/Rscript /src/get_data_big_query.R  >> /var/log/cron.log 2>&1
-# run job at second minute every 12 hours. An empty line is required at the end of this file for a valid cron file.
+11 */12 * * *  /usr/local/bin/Rscript /src/get_data_big_query.R >> /var/log/cron.log 2>&1
+# run job at elefenth minute every 12 hours. An empty line is required at the end of this file for a valid cron file.
