@@ -52,7 +52,7 @@ print(file.exists("/src/shared-data/"))
 print("Saved file exists:")
 print(file.exists("/src/shared-data/airquality_india.RDS"))
 
-print("Last data update:")
+print("Last data update time:")
 print(try(readRDS("/src/shared-data/last_update.RDS"), silent = TRUE))
 
 
@@ -75,24 +75,27 @@ get_data<- function(){
             
             #dbListTables(con) # see list of cointained tables - we just have this one in openaq dataset
             
-            airqual <- tbl(con, "global_air_quality")
+            airqual <- tbl(con, "global_air_quality") 
+            table_info <- tbl(con, "__TABLE__") 
             print("Connection to Big Query global air quality data set established")
             
-            # make query function to get the last update date of the table
-            query <- "SELECT *, TIMESTAMP_MILLIS(last_modified_time) AS last_update
-                      FROM `bigquery-public-data.openaq.__TABLES__`
-                        WHERE table_id = 'global_air_quality'"
+            
+            # To update the data only if the data set was updated, we get the last modified time from the metadata __TABLE__.
+            # To read from the metadata is faster then a table lookup in the data set itself and does not get billed.
+            # as the raw timestamp in ms invokes an integer overflow in R, we convert it to numeric in the DB, and then in the R session to POSIXct datetime.
+            ga_metadata <- table_info %>%
+                        filter(table_id == 'global_air_quality') %>%
+                        mutate(last_update = as.numeric(last_modified_time)) %>%
+                        collect %>%
+                        mutate(last_update = as.POSIXct(last_update / 1000,
+                                                               origin = "1970-01-01"))  # get datetime from ms
             
             
-            last_update <- dbGetQuery(con, query)$last_update
             
-            # Explanation: To update data only if the dataset has changed we read in metadata of the dataset to get last update time.
-            # This is done via SQL querying as it is more convenient instead dplyr. We could also check the timestamp of the last entrie in
-            # the data set itself, however querying only the meta data table is faster and does not get billed. The timestamp is calculated
-            # in DB in ms as the raw timestamp from BQ leads to an integer overflow in R.
+            
             
             # check for new entries, if not equal, get new data
-            if(last_update != try(readRDS("/src/shared-data/last_update.RDS"), silent = TRUE)){
+            if(ga_metadata$last_update != try(readRDS("/src/shared-data/last_update.RDS"), silent = TRUE)){
                         
                         # dblyr filter measurements from India
                         airquality_india<- airqual %>% 
@@ -118,7 +121,7 @@ get_data<- function(){
                         saveRDS(airquality_india_joined, "/src/shared-data/airquality_india.RDS")
                         
                         # save last update date for future runs
-                        saveRDS(last_update, "/src/shared-data/last_update.RDS")
+                        saveRDS(ga_metadata$last_update, "/src/shared-data/last_update.RDS")
                         
                         print("New data saved")
                         
