@@ -1,3 +1,9 @@
+This project is described in detail in a blog post series:
+
+**Part I:** https://medium.com/analytics-vidhya/google-big-query-with-r-875facef7844
+**Part II:** https://medium.com/analytics-vidhya/live-data-extraction-with-cron-and-r-f29324bf153e
+
+
 # Dockerized Plumber API
 
 These REST APIs provide a way for platform/language independent access to the public Google Big Query dataset  `bigquery-public-data:openaq.global_air_quality` of air pollution measured soley at Indian measurement points. The dataset is updated daily, however older data seem to get deleted. To access this data a Cron job fetches new data in 12 hour intervals from Google through the R script `get_data_big_query.R` and adds new rows to the saved dataset. The data can be requested fully or aggregated on date intervals through the APIs provided in the Rscript `API.R`. The data import via Cron and the APIs are run seperately in two Docker containers with a shared volume for the data as specified in the `docker-compose.yml`.<br><br> The APIs for Cloud Storage and Big Query have to be activated first for the used Google account at https://console.cloud.google.com/ and a Service Account Token (here not included, should go in cron/src/) needs to be generated and downloaded for authentification as described in section "Service account token" at https://gargle.r-lib.org/articles/get-api-credentials.html. For information about the r package `bigrquery`  see https://github.com/r-dbi/bigrquery. 
