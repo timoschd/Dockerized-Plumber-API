@@ -1,6 +1,6 @@
 This project is described in detail in a blog post series:
 
-**Part I:** https://medium.com/analytics-vidhya/google-big-query-with-r-875facef7844
+**Part I:** https://medium.com/analytics-vidhya/google-big-query-with-r-875facef7844 <p>
 **Part II:** https://medium.com/analytics-vidhya/live-data-extraction-with-cron-and-r-f29324bf153e
 
 
