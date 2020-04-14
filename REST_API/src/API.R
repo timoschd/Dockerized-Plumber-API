@@ -61,7 +61,7 @@ function(){
 }
 
 #* Get median airquality metrics of the current date with date horizon for averaging. Specific measurement location or default all locations
-#* @param date The daterange (today, week, month, quarter, year)
+#* @param date The daterange (today, week, month, quarter, year). Defaults to today.
 #* @param measurement_location see locations for possible values
 #* @post /summed_quality_now
 function(date = "today", measurement_location = "all"){
@@ -130,7 +130,7 @@ function(date = "today", measurement_location = "all"){
 
 
 #* Get averaged air quality for all dates. The timerange for averaging and the measurement location can be set. No set location defaults to all.
-#* @param date The daterange over which is averaged (day, week, month, quarter, year)
+#* @param date The daterange over which is averaged (day, week, month, quarter, year). Defaults to day.
 #* @param measurement_location see locations for possible values
 #* @post /summed_quality
 function(date = "day", measurement_location = "all"){
