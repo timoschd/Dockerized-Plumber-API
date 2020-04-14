@@ -9,11 +9,11 @@ volumes:
 services:
   REST-API:
     build: 
-      context: ./REST_API # Docker image is rebuild from directory
+      context: ./REST_API # Docker image is rebuild from directory which contains Dockerfile
     depends_on: 
-      - cron-job # cron job container needs to start first
+      - cron-job # cron job container should start first
     container_name: rest-api
-    image: rest_api_pub
+    image: openaq_API
     networks:
       - cr-net
     volumes:
@@ -25,9 +25,9 @@ services:
 
   cron-job:
     build: 
-      context: ./cron
+      context: ./cron # Docker image is rebuild from directory which contains Dockerfile
     container_name: cron-job
-    image: cron_job_pub
+    image: openaq_extraction
     networks:
       - cr-net 
     volumes:
