@@ -17,7 +17,6 @@ services:
     networks:
       - cr-net
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - shared-data:/src/shared-data
     ports:
       - "3838:3838"
