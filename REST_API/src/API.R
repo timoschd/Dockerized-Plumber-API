@@ -35,7 +35,7 @@ pacman::p_load("tidyverse", "lubridate", "plumber")
 
 # check if shared directory exists
 print("Shared directory exists:")
-print(file.exists("shared-data/"))
+print(dir.exists("shared-data/"))
 
 
 
